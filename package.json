@@ -1,0 +1,29 @@
+{
+  "name": "mzcodingchallenge",
+  "version": "1.0.0",
+  "description": "Coding challenge for appliction to Malauzai Software.",
+  "main": "app.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LanceHunter/mzCodingChallenge.git"
+  },
+  "keywords": [
+    "coding",
+    "challenge"
+  ],
+  "author": "R. Lance Hunter",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/LanceHunter/mzCodingChallenge/issues"
+  },
+  "homepage": "https://github.com/LanceHunter/mzCodingChallenge#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  },
+  "devDependencies": {
+    "mocha": "^5.1.1"
+  }
+}

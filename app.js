@@ -79,7 +79,13 @@ app.post('/', (req, res) => {
       if (resultsArray.length > customerConfig[0].requestNumber) {
         resultsArray = resultsArray.slice(0, customerConfig[0].requestNumber);
       }
-      res.status(200).send(resultsArray);
+      if (customerConfig[0].responseOutput === 'json') {
+        res.status(200).send(resultsArray);
+      } else {
+        let builder = new xml2js.Builder();
+        let xmlReply = builder.buildObject(resultsArray);
+        res.status(200).send(xmlReply);
+      }
     });
   }).on('error', (e) => {
     console.error(`Got error: ${e.message}`);

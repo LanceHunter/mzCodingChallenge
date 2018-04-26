@@ -47,9 +47,9 @@ describe('API request server', () => {
         .post('/')
         .set('Content-Type', 'application/json')
         .send({
-          customer : 'Sunrise Bank',
-          latitude : 40.730610,
-          longitude : -73.935242
+          customer: 'Sunrise Bank',
+          latitude: 40.730610,
+          longitude: -73.935242
         })
         .expect('Content-Type', /xml/)
         .expect(200, done);
@@ -60,9 +60,9 @@ describe('API request server', () => {
         .post('/')
         .set('Content-Type', 'application/json')
         .send({
-          customer : 'Paris FCU',
-          latitude : 40.730610,
-          longitude : -73.935242
+          customer: 'Paris FCU',
+          latitude: 40.730610,
+          longitude: -73.935242
         })
         .expect('Content-Type', /json/)
         .expect(200);
@@ -70,9 +70,9 @@ describe('API request server', () => {
         .post('/')
         .set('Content-Type', 'application/json')
         .send({
-          customer : 'Happy Credit Union',
-          latitude : 40.730610,
-          longitude : -73.935242
+          customer: 'Happy Credit Union',
+          latitude: 40.730610,
+          longitude: -73.935242
         })
         .expect('Content-Type', /json/)
         .expect(200, done);
@@ -83,9 +83,9 @@ describe('API request server', () => {
         .post('/')
         .set('Content-Type', 'application/json')
         .send({
-          customer : 'Paris FCU',
-          latitude : 'ff',
-          longitude : -73.935242
+          customer: 'Paris FCU',
+          latitude: 'ff',
+          longitude: -73.935242
         })
         .expect(400, (err, res) => {
           assert.equal(res.error.text, 'Latitude is not valid.');
@@ -95,8 +95,8 @@ describe('API request server', () => {
         .post('/')
         .set('Content-Type', 'application/json')
         .send({
-          latitude : 40.730610,
-          longitude : -73.935242
+          latitude: 40.730610,
+          longitude: -73.935242
         })
         .expect(400, (err, res) => {
           assert.equal(res.error.text, 'Customer name, latitude, and longitude requred. Please send these in a JSON body using the keys "customer", "latitude", and "longitude".');
@@ -106,9 +106,9 @@ describe('API request server', () => {
         .post('/')
         .set('Content-Type', 'application/json')
         .send({
-          customer : 'HappyCreditUnion',
-          latitude : 40.730610,
-          longitude : -73.935242
+          customer: 'HappyCreditUnion',
+          latitude: 40.730610,
+          longitude: -73.935242
         })
         .expect(400, (err, res) => {
           assert.equal(res.error.text, 'Unable to find information for that customer.')

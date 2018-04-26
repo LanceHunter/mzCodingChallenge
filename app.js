@@ -25,8 +25,9 @@ config[2].apiKey = process.env.PARISFCUAPI;
 // Getting bodyParser running.
 app.use(bodyParser.json());
 
-// Route for POST requests, getting the information from request body and
+// Route for GET requests, getting the information from request body and sending the reply as needed.
 app.post('/', (req, res) => {
+  console.log('Req.body - ', req.body);
   if (!req.body.customer || !req.body.latitude || !req.body.longitude) {
     res.status(400).send('Customer name, latitude, and longitude requred. Please send these in the URL of the request using the keys "customer", "latitude", and "longitude".');
     return;
@@ -51,40 +52,51 @@ app.post('/', (req, res) => {
     return;
   }
   // With all verification completed. Now we get to actually start sending the request...
-  let urlToGet = `https://maps.googleapis.com/maps/api/place/nearbysearch/${customerConfig[0].responseOutput}?location=${latitude},${longitude}&radius=2000&language=${customerConfig[0].language}&type=${customerConfig[0].type}&key=${customerConfig[0].apiKey}`;
+  let urlToGet = `https://maps.googleapis.com/maps/api/place/radarsearch/json?location=${latitude},${longitude}&radius=2000&language=${customerConfig[0].language}&type=${customerConfig[0].type}&key=${customerConfig[0].apiKey}`;
 
   https.get(urlToGet, (getRes) => {
-    let resultsArray;
     const { statusCode } = getRes;
     console.log('statusCode - ', statusCode);
+
+    if (statusCode !== 200) {
+      res.sendStatus(statusCode);
+      return;
+    }
 
     getRes.setEncoding('utf8');
     let rawData = '';
     getRes.on('data', (chunk) => { rawData += chunk; });
     getRes.on('end', () => {
       try {
-        if (customerConfig[0].responseOutput === 'json') {
-          const parsedData = JSON.parse(rawData);
-          resultsArray = parsedData.results;
-          console.log('Here is the results array - ', resultsArray);
+        let replyJSON = JSON.parse(rawData);
+        console.log('replyJSON.status - ', replyJSON.status);
+        if (replyJSON.status === "OK") {
+          let resultsArray = replyJSON.results;
+          if (resultsArray.length > customerConfig[0].requestNumber) {
+            resultsArray = resultsArray.slice(0, customerConfig[0].requestNumber);
+          }
+          if (customerConfig[0].responseOutput === 'json') {
+            res.status(200).send(resultsArray);
+          } else {
+            let builder = new xml2js.Builder();
+            let xmlReply = builder.buildObject(resultsArray);
+            res.status(200).send(xmlReply);
+          }
+        } else if (replyJSON.status === 'ZERO_RESULTS') {
+          res.status(200).send('No results for this location.');
+        } else if (replyJSON.status === 'OVER_QUERY_LIMIT') {
+          res.status(400).send('Over query limit.');
+        } else if (replyJSON.status === 'REQUEST_DENIED') {
+          res.status(400).send('Request was denied.');
+        } else if (replyJSON.status === 'INVALID_REQUEST') {
+          res.status(400).send('Request is invalid.');
+        } else if (replyJSON.status === 'UNKNOWN_ERROR') {
+          res.status(500).send('Unknown error received.');
         } else {
-          parser.parseString(rawData, (err, result) => {
-            resultsArray = result.PlaceSearchResponse.result;
-          });
-          console.log('Here is the results array - ', resultsArray);
+          res.status(500).send('Unknown error received.');
         }
       } catch (e) {
         console.error(e.message);
-      }
-      if (resultsArray.length > customerConfig[0].requestNumber) {
-        resultsArray = resultsArray.slice(0, customerConfig[0].requestNumber);
-      }
-      if (customerConfig[0].responseOutput === 'json') {
-        res.status(200).send(resultsArray);
-      } else {
-        let builder = new xml2js.Builder();
-        let xmlReply = builder.buildObject(resultsArray);
-        res.status(200).send(xmlReply);
       }
     });
   }).on('error', (e) => {

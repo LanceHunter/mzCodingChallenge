@@ -2,6 +2,7 @@ const request = require('supertest');
 const assert = require('assert');
 
 describe('API request server', () => {
+  // First making sure GET requests receive a 404, as the POST route
   describe('GET', () => {
     let app;
     beforeEach(() => {
@@ -27,6 +28,19 @@ describe('API request server', () => {
     beforeEach(() => {
       app = require('../app.js');
     });
+
+    it('Returns a 404 for any request other than /', (done) => {
+      request(app)
+        .post('/test')
+        .expect(404);
+      request(app)
+        .post('/foo')
+        .expect(404);
+      request(app)
+        .post('/index.html')
+        .expect(404, done);
+    });
+
 
     it('Returns XML for customers requesting that in their config', (done) => {
       request(app)

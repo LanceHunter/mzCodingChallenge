@@ -16,11 +16,11 @@ const https = require('https');
 const xml2js = require('xml2js');
 const parser = new xml2js.Parser()
 
-// Loading the customer configuration from its json file into a local object and adding the api keys each .
+// Loading the customer configuration from its json file into a local object and adding the api keys from the .env file.
 const config = require('./config.json');
-config[0].apiKey = process.env.SUNRISEBANKAPI;
-config[1].apiKey = process.env.HAPPYCREDITUNIONAPI;
-config[2].apiKey = process.env.PARISFCUAPI;
+config.forEach((configuration) => {
+  configuration.apiKey = eval(`process.env.${configuration.keyString}`);
+});
 
 // Getting bodyParser to check the json body.
 app.use(bodyParser.json());
@@ -53,7 +53,7 @@ app.post('/', (req, res) => {
     res.status(400).send('Unable to find information for that customer.');
     return;
   }
-  // With all verification completed. Now we get to actually start sending the request. First, we set up the search URL.
+  // With all verification completed. Now we get to actually start sending the request. First, we set up the search URL. (Using the Radar Search from Google's Places API here as there are customers requesting up to 200 items. The Nearby Search only allows a maximum of 60 results.)
   let urlToGet = `https://maps.googleapis.com/maps/api/place/radarsearch/json?location=${latitude},${longitude}&radius=2000&language=${customerConfig[0].language}&type=${customerConfig[0].type}&key=${customerConfig[0].apiKey}`;
   // Now we send the HTTPS request.
   https.get(urlToGet, (getRes) => {
@@ -106,6 +106,7 @@ app.post('/', (req, res) => {
       } catch (e) {
         // Catching any other errors in response.
         console.error(e.message);
+        res.status(500).send(e.message);
       }
     });
   }).on('error', (e) => {

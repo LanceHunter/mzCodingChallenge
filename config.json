@@ -4,20 +4,23 @@
     "type" : "atm",
     "language" : "English",
     "responseOutput" : "xml",
-    "requestNumber" : 200
+    "requestNumber" : 200,
+    "keyString" : "SUNRISEBANKAPI"
   },
   {
     "name" : "Happy Credit Union",
     "type" : "bank",
     "language" : "Spanish",
     "responseOutput" : "json",
-    "requestNumber" : 20
+    "requestNumber" : 20,
+    "keyString" : "HAPPYCREDITUNIONAPI"
   },
   {
     "name" : "Paris FCU",
     "type" : "all",
     "language" : "French",
     "responseOutput" : "json",
-    "requestNumber" : 5
+    "requestNumber" : 5,
+    "keyString" : "PARISFCUAPI"
   }
 ]

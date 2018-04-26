@@ -1,0 +1,22 @@
+{
+  "sunriseBank" : {
+    "type" : "atm",
+    "language" : "English",
+    "responseOutput" : "xml",
+    "requestNumber" : 200
+  },
+  "happyCreditUnion" : {
+    "apiKey" : "process.env.HAPPYCREDITUNIONAPI",
+    "type" : "bank",
+    "language" : "Spanish",
+    "responseOutput" : "json",
+    "requestNumber" : 20
+  },
+  "parisFCU" : {
+    "apiKey" : "process.env.PARISFCUAPI",
+    "type" : "all",
+    "language" : "French",
+    "responseOutput" : "json",
+    "requestNumber" : 5
+  }
+}

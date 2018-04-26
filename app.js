@@ -6,37 +6,23 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = process.env.PORT || 8888;
 
-const config = {
-  sunriseBank : {
-    apiKey : process.env.SUNRISEBANKAPI,
-    type : 'atm',
-    language : 'English',
-    responseOutput : 'xml',
-    requestNumber : 200
-  },
-  happyCreditUnion : {
-    apiKey : process.env.HAPPYCREDITUNIONAPI,
-    type : 'bank',
-    language : 'Spanish',
-    responseOutput : 'json',
-    requestNumber : 20
-  },
-  parisFCU : {
-    apiKey : process.env.PARISFCUAPI,
-    type : 'all',
-    language : 'French',
-    responseOutput : 'json',
-    requestNumber : 5
-  }
-};
+const config = require('./config.json');
+config.sunriseBank.apiKey = process.env.SUNRISEBANKAPI;
+config.happyCreditUnion.apiKey = process.env.HAPPYCREDITUNIONAPI;
+config.parisFCU.apiKey = process.env.PARISFCUAPI;
 
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
   console.log(req.body);
+  if (!req.body.customer || !req.body.latitude || !req.body.longitude) {
+    res.status(400);
+    res.send('Customer name, latitude, and longitude requred. Please send content ')
+  }
 });
 
 app.listen(port, () => {
+  console.log(config);
   console.log('Listening on port ', port);
 });
 

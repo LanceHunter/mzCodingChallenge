@@ -12,6 +12,10 @@ const port = process.env.PORT || 8888;
 // Setting up HTTPS so we can send out https requests.
 const https = require('https');
 
+// XML parsing for the case where customer wants XML reply.
+const xml2js = require('xml2js');
+const parser = new xml2js.Parser()
+
 // Loading the customer configuration from its json file into a local object and adding the api keys each .
 const config = require('./config.json');
 config[0].apiKey = process.env.SUNRISEBANKAPI;
@@ -50,6 +54,7 @@ app.post('/', (req, res) => {
   let urlToGet = `https://maps.googleapis.com/maps/api/place/nearbysearch/${customerConfig[0].responseOutput}?location=${latitude},${longitude}&radius=2000&language=${customerConfig[0].language}&type=${customerConfig[0].type}&key=${customerConfig[0].apiKey}`;
 
   https.get(urlToGet, (getRes) => {
+    let resultsArray;
     const { statusCode } = getRes;
     console.log('statusCode - ', statusCode);
 
@@ -58,17 +63,27 @@ app.post('/', (req, res) => {
     getRes.on('data', (chunk) => { rawData += chunk; });
     getRes.on('end', () => {
       try {
-        const parsedData = JSON.parse(rawData);
-        console.log(parsedData);
+        if (customerConfig[0].responseOutput === 'json') {
+          const parsedData = JSON.parse(rawData);
+          resultsArray = parsedData.results;
+          console.log('Here is the results array - ', resultsArray);
+        } else {
+          parser.parseString(rawData, (err, result) => {
+            resultsArray = result.PlaceSearchResponse.result;
+          });
+          console.log('Here is the results array - ', resultsArray);
+        }
       } catch (e) {
         console.error(e.message);
       }
+      if (resultsArray.length > customerConfig[0].requestNumber) {
+        resultsArray = resultsArray.slice(0, customerConfig[0].requestNumber);
+      }
+      res.status(200).send(resultsArray);
     });
-
-
-
+  }).on('error', (e) => {
+    console.error(`Got error: ${e.message}`);
   });
-
 
 });
 

@@ -87,7 +87,7 @@ app.post('/', (req, res) => {
             // If the customer doesn't want a response in JSON, parse the data into XML and send that XML to customer.
             let builder = new xml2js.Builder();
             let xmlReply = builder.buildObject(resultsArray);
-            res.status(200).send(xmlReply);
+            res.status(200).set('Content-Type', 'application/xml').send(xmlReply);
           }
         // If the response status received from Google is not 'OK', send an error forward explaining the problem.
         } else if (replyJSON.status === 'ZERO_RESULTS') {

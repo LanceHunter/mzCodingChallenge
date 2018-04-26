@@ -16,7 +16,7 @@ const https = require('https');
 const xml2js = require('xml2js');
 const parser = new xml2js.Parser()
 
-// Loading the customer configuration from its json file into a local object and adding the api keys from the .env file.
+// Loading the customer configuration from its json file into a local object and adding the API keys from the .env file.
 const config = require('./config.json');
 config.forEach((configuration) => {
   configuration.apiKey = eval(`process.env.${configuration.keyString}`);
